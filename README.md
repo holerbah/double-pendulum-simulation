@@ -4,50 +4,71 @@
 Radim projekat za **ocenu 7**.
 
 ## Opis problema
-Cilj ovog projekta je simulacija dinamike **dvostrukog klatna** (double pendulum), sistema koji se sastoji od dva povezana klatna, pri čemu je kretanje jednog klatna nelinearno povezano sa kretanjem drugog. Problem je poznat po svojoj **osetljivosti na početne uslove** i **kaotičnom ponašanju**.
+**Dvostruko klatno** je sistem od dva povezana klatna koji se slobodno kreću pod uticajem gravitacije.  
+Ovo je klasičan primer **nelinearnog i kaotičnog sistema**, gde mala promena početnih uslova dovodi do značajno različitih trajektorija.
 
-Simulacija uključuje izračunavanje kretanja po iteracijama, uz primenu osnovnih principa klasične mehanike (Lagrangeova jednačina).
+### Varijable
+- θ1, θ2 – uglovi klatna u odnosu na vertikalu (radijani)
 
-## Metode korišćene za rešavanje problema
-Za rešavanje problema korišćene su sledeće metode i pristupi u Python-u:
+- ω1, ω2 – ugaone brzine klatna (rad/s)
 
-1. **Sekvencijalna implementacija**
-   - Izračunava stanje dvostrukog klatna po iteracijama.
-   - Generiše izlazne datoteke (`.csv`) sa rezultatima.
+- L1, L2 – dužine klatna (m)
 
-2. **Paralelizovana implementacija**
-   - Korišćenjem `multiprocessing` biblioteke.
-   - Omogućava ubrzanje izvođenja simulacije pri većem broju iteracija.
-   - Rezultati su takođe generisani u `.csv` datotekama.
+- M1, M2 – mase klatna (kg)
 
-3. **Eksperimenti skaliranja**
-   - **Jako skaliranje (strong scaling)**: upoređivanje ubrzanja paralelne verzije u odnosu na sekvencijalnu.
-   - **Slabo skaliranje (weak scaling)**: upoređivanje ubrzanja paralelne verzije uz konstantan posao po procesorskom jezgru.
-   - Svaka kombinacija broja jezgara i veličine problema izvršena je 3 puta kako bi se dobili relevantni rezultati.
-   - Rezultati su predstavljeni grafički i tabelarno, uključujući prosečno vreme izvršavanja, standardnu devijaciju i outlier-e.
+- g – gravitaciona konstanta (m/s²)
 
+### Diferencijalne jednačine
+Koriste se Lagrangeove jednačine:
 
-## Pokretanje simulacije
- 
+dθ1/dt = ω1
+dθ2/dt = ω2
+dω1/dt = (M2*L1*ω1^2*sin(θ2-θ1)*cos(θ2-θ1) + M2*g*sin(θ2)*cos(θ2-θ1)
+          + M2*L2*ω2^2*sin(θ2-θ1) - (M1+M2)*g*sin(θ1)) 
+          / ((M1+M2)*L1 - M2*L1*cos^2(θ2-θ1))
+dω2/dt = -(L2/L1)*ω1^2*sin(θ2-θ1) + ((M1+M2)*g*sin(θ1)*cos(θ2-θ1))/L2
+          - ((M1+M2)*g*sin(θ2))/L2 + (M1+M2)*ω2^2*sin(θ2-θ1)*cos(θ2-θ1)
+
+## Implementacija u Python-u
+
+1. **Sekvencijalna verzija**
+   - Rešava sistem ODE koristeći `odeint` iz `scipy.integrate`.
+   - Početni uslovi: θ1 = θ2 = π/2, ω1 = ω2 = 0
+   - Generiše **jedan CSV fajl** `results_sequential.csv` sa kolonama: `time, theta1, theta2, x1, y1, x2, y2`
+   - Pozicije klatna:  
+        - x1 = L1 * sin(θ1)
+        - y1 = -L1 * cos(θ1)
+        - x2 = x1 + L2 * sin(θ2)
+        - y2 = y1 - L2 * cos(θ2)
+
+2. **Paralelizovana verzija**
+   - Korišćenjem `multiprocessing.Pool`.
+   - Izvršava više simulacija sa različitim početnim uglovima paralelno.
+   - Rezultati se čuvaju u više CSV fajlova (`results_parallel_1.csv`, `results_parallel_2.csv`, …)
+   - Omogućava ubrzanje izvođenja simulacije pri većem broju procesa.
+
+## Eksperimenti skaliranja
+
+1. **Jako skaliranje (strong scaling)**  
+   - Upoređuje se vreme paralelne verzije sa sekvencijalnom.
+   - Računa se ubrzanje: S_p = T1 / Tp
+   - Grafikon sačuvan kao `strong_scaling.png`.
+   - Svaka kombinacija broja jezgara izvršena 3 puta za test (za pun eksperiment ~30 puta).
+
+2. **Slabo skaliranje (weak scaling)**  
+   - Posao po jezgru je konstantan.
+   - Računa se ubrzanje: S_p = T1 / Tp
+   - Grafikon sačuvan kao `weak_scaling.png`.
+
+## Pokretanje simulacija
 
 ### Sekvencijalna verzija
-python double_pendulum_seq.py
+python sequential_simulation.py
 
 ### Paralelna verzija
-python double_pendulum_par.py
+python parallel_simulation.py
 
-
-
-Rezultati će biti generisani u `.csv` datotekama koje sadrže stanje sistema po iteracijama.
-
-## Eksperimenti i analize
-- Grafici su generisani direktno u root direktorijumu repozitorijuma:
-  - `strong_scaling.png` → grafik jakog skaliranja (Amdalov zakon)
-  - `weak_scaling.png` → grafik slabog skaliranja (Gustafsonov zakon)
-- Za svaki grafikon:
-  - X-osa prikazuje broj procesa.
-  - Y-osa prikazuje ostvareno ubrzanje ili efikasnost.
-- Analiza uključuje poređenje sa idealnim skaliranjem i objašnjenje razlika.
+CSV fajlovi će sadržati stanje sistema po iteracijama.
 
 ## Biblioteke i alati
 - Python: `numpy`, `matplotlib`, `multiprocessing`
