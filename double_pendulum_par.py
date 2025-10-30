@@ -4,14 +4,14 @@ from multiprocessing import Pool
 import csv
 import time
 
-# --- FIZIČKE KONSTANTE ---
+# Fizicke konstante
 g = 9.81
 L1 = 1.0
 L2 = 1.0
 M1 = 1.0
 M2 = 1.0
 
-# --- SISTEM DIFERENCIJALNIH JEDNAČINA ---
+# Sistem diferencijalnih jednacina
 def derivatives(y, t, L1, L2, M1, M2):
     θ1, ω1, θ2, ω2 = y
 
@@ -29,7 +29,7 @@ def derivatives(y, t, L1, L2, M1, M2):
     return [ω1, ω1_dot, ω2, ω2_dot]
 
 
-# --- FUNKCIJA ZA JEDNU SIMULACIJU ---
+# Funkcija za jednu simulaciju
 def simulate_double_pendulum(args):
     θ1_0, θ2_0, index = args
     ω1_0, ω2_0 = 0.0, 0.0
@@ -54,9 +54,8 @@ def simulate_double_pendulum(args):
     return filename
 
 
-# --- GLAVNI PROGRAM ---
 if __name__ == "__main__":
-    # Lista različitih početnih uslova (razni uglovi)
+    # Pocetni uslovi(uglovi)
     initial_conditions = [
         (np.pi/2, np.pi/2, 1),
         (np.pi/3, np.pi/3, 2),
@@ -69,9 +68,9 @@ if __name__ == "__main__":
     ]
 
     start = time.time()
-    with Pool(processes=4) as pool:   # menjaš broj procesa (npr. 2, 4, 8)
+    with Pool(processes=4) as pool:  
         results = pool.map(simulate_double_pendulum, initial_conditions)
     end = time.time()
 
-    print(f"✅ Završeno! Generisano {len(results)} fajlova.")
-    print(f"⏱️ Ukupno vreme izvršavanja: {end - start:.2f} sekundi.")
+    print(f"Generisano {len(results)} fajlova.")
+    print(f"Ukupno vreme izvrsavanja: {end - start:.2f} sekundi.")

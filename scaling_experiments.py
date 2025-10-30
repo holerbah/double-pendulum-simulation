@@ -10,7 +10,7 @@ process_counts = [1, 2, 4, 8]
 num_simulations = 8
 
 # Broj ponavljanja za svaku konfiguraciju (da se dobije prosečno vreme)
-repetitions = 3
+repetitions = 30
 
 
 def run_simulation(num_processes):
@@ -25,7 +25,7 @@ def run_simulation(num_processes):
 # ----------------------- JAKO SKALIRANJE -----------------------
 strong_scaling_times = {}
 
-print("🧪 Pokrećem test jakog skaliranja...")
+print("Pokrećem test jakog skaliranja...")
 for p in process_counts:
     total_time = 0
     for _ in range(repetitions):
@@ -46,7 +46,7 @@ for p in process_counts:
     strong_scaling_times[p] = avg_time
     print(f"Procesa: {p} → prosečno vreme: {avg_time:.2f}s")
 
-# Računaj ubrzanje
+# Ubrzanje
 T1 = strong_scaling_times[1]
 speedups = {p: T1 / t for p, t in strong_scaling_times.items()}
 
@@ -66,11 +66,11 @@ plt.legend()
 plt.grid(True)
 plt.savefig("strong_scaling.png")
 plt.close()
-print("✅ Grafik jakog skaliranja sačuvan kao strong_scaling.png")
+print("Grafik jakog skaliranja sačuvan kao strong_scaling.png")
 
 # ----------------------- SLABO SKALIRANJE -----------------------
 
-print("\n🧪 Pokrećem test slabog skaliranja...")
+print("\n Pokrećem test slabog skaliranja...")
 
 weak_scaling_times = {}
 
@@ -117,4 +117,4 @@ plt.legend()
 plt.grid(True)
 plt.savefig("weak_scaling.png")
 plt.close()
-print("✅ Grafik slabog skaliranja sačuvan kao weak_scaling.png")
+print("Grafik slabog skaliranja sačuvan kao weak_scaling.png")

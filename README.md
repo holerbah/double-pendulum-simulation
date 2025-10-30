@@ -53,7 +53,7 @@ dω2/dt = -(L2/L1)*ω1^2*sin(θ2-θ1) + ((M1+M2)*g*sin(θ1)*cos(θ2-θ1))/L2
    - Upoređuje se vreme paralelne verzije sa sekvencijalnom.
    - Računa se ubrzanje: S_p = T1 / Tp
    - Grafikon sačuvan kao `strong_scaling.png`.
-   - Svaka kombinacija broja jezgara izvršena 3 puta za test (za pun eksperiment ~30 puta).
+   - Svaka kombinacija broja jezgara izvršena 30 puta.
 
 2. **Slabo skaliranje (weak scaling)**  
    - Posao po jezgru je konstantan.
